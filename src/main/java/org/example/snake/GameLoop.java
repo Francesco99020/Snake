@@ -11,6 +11,7 @@ public class GameLoop extends AnimationTimer {
     private final ObservableList<Node> rootChildren;
     private long lastUpdate = 0;
     private static final long UPDATE_INTERVAL = 200_000_000; // Update every 200 milliseconds (5 times per second)
+
     public GameLoop(Board board, Snake snake, ObservableList<Node> rootChildren, Game game) {
         this.board = board;
         this.snake = snake;
@@ -30,16 +31,16 @@ public class GameLoop extends AnimationTimer {
 
     private void update() {
         boolean hasEatenFood = false;
-        int[] prevTailPos = snake.getBody().getLast().getPosition();
+        int[] prevTailPos = snake.getBody().get(snake.getBody().size() - 1).getPosition();
 
         int[] headPos = snake.move();
 
         // Check if the head position is within the board boundaries
         if (headPos[0] < 0 || headPos[0] >= board.getCells().length ||
                 headPos[1] < 0 || headPos[1] >= board.getCells()[0].length) {
-            System.out.println("Game Over: Out of bounds");
-            System.out.println("Final Score: " + snake.getBody().size());
-            System.exit(0);
+            game.endGame(snake.getBody().size());
+            stop();
+            return;
         }
 
         // Check for collisions with food or snake itself
@@ -47,9 +48,9 @@ public class GameLoop extends AnimationTimer {
         if (headCellType == CellType.FOOD) {
             hasEatenFood = true;
         } else if (headCellType == CellType.SNAKE) {
-            System.out.println("Game Over: Collided with self");
-            System.out.println("Final Score: " + snake.getBody().size());
-            System.exit(0);
+            game.endGame(snake.getBody().size());
+            stop();
+            return;
         }
 
         // Update the board with the snake's body parts
