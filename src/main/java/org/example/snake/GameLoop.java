@@ -7,19 +7,21 @@ import javafx.scene.Node;
 public class GameLoop extends AnimationTimer {
     private final Board board;
     private final Snake snake;
+    private final Game game;
     private final ObservableList<Node> rootChildren;
     private long lastUpdate = 0;
     private static final long UPDATE_INTERVAL = 200_000_000; // Update every 200 milliseconds (5 times per second)
-
-    public GameLoop(Board board, Snake snake, ObservableList<Node> rootChildren) {
+    public GameLoop(Board board, Snake snake, ObservableList<Node> rootChildren, Game game) {
         this.board = board;
         this.snake = snake;
+        this.game = game;
         this.rootChildren = rootChildren;
     }
 
     @Override
     public void handle(long now) {
         if (now - lastUpdate >= UPDATE_INTERVAL) {
+            game.resetInputProcessed();
             update();
             draw();
             lastUpdate = now;

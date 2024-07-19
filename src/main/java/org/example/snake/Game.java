@@ -8,6 +8,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public class Game extends Application {
+    private boolean inputProcessed = false;
     @Override
     public void start(Stage primaryStage) {
         Pane root = new Pane();
@@ -27,11 +28,17 @@ public class Game extends Application {
         primaryStage.setResizable(false); // Make the window non-resizable
         primaryStage.show();
 
-        GameLoop gameLoop = new GameLoop(board, snake, root.getChildren());
+        GameLoop gameLoop = new GameLoop(board, snake, root.getChildren(), this);
         gameLoop.start();
     }
 
+    public void resetInputProcessed() {
+        inputProcessed = false; // Reset the flag at the beginning of each frame
+    }
+
     private void handleKeyPress(KeyEvent event, Snake snake) {
+        if (inputProcessed) return; // Ignore if input has already been processed this frame
+
         KeyCode code = event.getCode();
         Direction currentDirection = snake.getDirection();
 
@@ -39,21 +46,25 @@ public class Game extends Application {
             case W, UP -> {
                 if (currentDirection != Direction.DOWN) {
                     snake.setDirection(Direction.UP);
+                    inputProcessed = true;
                 }
             }
             case S, DOWN -> {
                 if (currentDirection != Direction.UP) {
                     snake.setDirection(Direction.DOWN);
+                    inputProcessed = true;
                 }
             }
             case A, LEFT -> {
                 if (currentDirection != Direction.RIGHT) {
                     snake.setDirection(Direction.LEFT);
+                    inputProcessed = true;
                 }
             }
             case D, RIGHT -> {
                 if (currentDirection != Direction.LEFT) {
                     snake.setDirection(Direction.RIGHT);
+                    inputProcessed = true;
                 }
             }
         }
